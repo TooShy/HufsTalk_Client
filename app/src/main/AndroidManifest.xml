@@ -18,6 +18,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".SplashActivity"
+            android:label="HufsTalk_Client"
+            android:theme="@android:style/Theme.NoTitleBar"/>
+        <activity android:name=".ChatBubbleActivity"/>
+
+
+
     </application>
 
 </manifest>

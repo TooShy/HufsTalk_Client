@@ -1,5 +1,6 @@
 package tooshy.hufstalk;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,16 +20,19 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        Intent i = new Intent(ChatActivity.this, SplashActivity.class);
+        startActivity(i);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                    System.out.println("pop");
+                    Intent intent = new Intent(ChatActivity.this,ChatBubbleActivity.class);
+                    startActivity(intent);
             }
         });
 
