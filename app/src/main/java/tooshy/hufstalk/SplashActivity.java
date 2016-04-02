@@ -19,6 +19,8 @@ public class SplashActivity extends Activity {
         hd.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Intent intent = new Intent(getApplicationContext(),ChatActivity.class);
+                startActivity(intent);
                 finish();
             }
         },2000);
