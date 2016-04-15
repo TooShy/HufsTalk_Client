@@ -1,4 +1,4 @@
-package tooshy.hufstalk;
+package com.example.seunghyun.chatactivity;
 
 import org.junit.Test;
 

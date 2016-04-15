@@ -1,9 +1,11 @@
-package tooshy.hufstalk;
+package com.example.seunghyun.chatactivity;
 
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,28 +15,68 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AbsListView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
 
-public class ChatActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "ChatActivity";
+
+    private ChatArrayAdapter chatArrayAdapter;
+    private ListView listView;
+    private EditText chatText;
+    private Button buttonSend;
+    Intent intent;
+    private boolean side = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
-        //splash view
-        startActivity(new Intent(this,SplashActivity.class));
-
+        setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        // 버튼클릭시 채팅방으로 Activity전환
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(ChatActivity.this,ChatRoomActivity.class);
-                startActivity(intent);
+        buttonSend = (Button) findViewById(R.id.buttonSend);
+
+        listView = (ListView) findViewById(R.id.listView1);
+
+        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.activity_chat_singlemessage);
+        listView.setAdapter(chatArrayAdapter);
+
+        chatText = (EditText) findViewById(R.id.chatText);
+        chatText.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+                    return sendChatMessage();
+                }
+                return false;
             }
         });
+
+
+        buttonSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                sendChatMessage();
+            }
+        });
+
+
+        listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
+        listView.setAdapter(chatArrayAdapter);
+
+        //to scroll the list view to bottom on data change
+        chatArrayAdapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                listView.setSelection(chatArrayAdapter.getCount() - 1);
+            }
+        });
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -42,11 +84,8 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-
-        // SEUNG HAK: commenting this
-        //navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -103,6 +142,12 @@ public class ChatActivity extends AppCompatActivity implements NavigationView.On
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+    private boolean sendChatMessage(){
+        chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
+        chatText.setText("");
+        side = !side;
         return true;
     }
 }

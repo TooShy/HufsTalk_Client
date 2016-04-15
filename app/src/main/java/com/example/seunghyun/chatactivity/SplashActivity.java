@@ -1,13 +1,12 @@
-package tooshy.hufstalk;
+package com.example.seunghyun.chatactivity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 
 /**
- * Created by seunghyun on 2016-03-27.
+ * Created by USER on 2016-03-29.
  */
 public class SplashActivity extends Activity {
     @Override
@@ -19,6 +18,8 @@ public class SplashActivity extends Activity {
         hd.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Intent intent = new Intent(getApplicationContext(),TopicActivity.class);
+                startActivity(intent);
                 finish();
             }
         },2000);
