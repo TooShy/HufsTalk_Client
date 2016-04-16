@@ -1,4 +1,4 @@
-package com.example.seunghyun.chatactivity;
+package tooshy.hufstalk.activity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,12 +8,12 @@ import android.os.Handler;
 /**
  * Created by seunghyun on 2016-04-09.
  */
-public class Loading extends Activity {
+public class LoadingActivity extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.progress);
+        setContentView(tooshy.hufstalk.activity.chatactivity.R.layout.progress);
         Handler hd = new Handler();
         hd.postDelayed(new Runnable() {
             @Override

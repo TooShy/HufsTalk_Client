@@ -1,10 +1,8 @@
-package com.example.seunghyun.chatactivity;
+package tooshy.hufstalk.activity;
 
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,8 +18,20 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.pusher.client.Pusher;
+import com.pusher.client.channel.Channel;
+import com.pusher.client.channel.SubscriptionEventListener;
+
+import tooshy.hufstalk.R;
+import tooshy.hufstalk.adapter.ChatArrayAdapter;
+import tooshy.hufstalk.model.ChatMessage;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+
+    Pusher pusher = new Pusher("f5ad826261aeb8068be6");
+
 
     private static final String TAG = "ChatActivity";
 
@@ -37,6 +47,19 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Pusher API 이용
+        Channel channel = pusher.subscribe("test_channel");
+        channel.bind("my_event", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, final String data) {
+                // 리스트에 채팅 메시지 추가(상대방)
+                System.out.println("received data" + data);
+            }
+        });
+
+
+        pusher.connect();
 
         buttonSend = (Button) findViewById(R.id.buttonSend);
 

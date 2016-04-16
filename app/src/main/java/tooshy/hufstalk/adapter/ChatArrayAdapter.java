@@ -1,4 +1,4 @@
-package com.example.seunghyun.chatactivity;
+package tooshy.hufstalk.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -14,10 +14,14 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import tooshy.hufstalk.R;
+import tooshy.hufstalk.model.ChatMessage;
+
 /**
  * Created by USER on 2016-03-22.
  */
 public class ChatArrayAdapter extends ArrayAdapter {
+
 
     private TextView chatText;
     private List chatMessageList = new ArrayList();

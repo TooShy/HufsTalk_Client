@@ -1,4 +1,4 @@
-package com.example.seunghyun.chatactivity;
+package tooshy.hufstalk.model;
 
 /**
  * Created by USER on 2016-03-22.

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.seunghyun.chatactivity">
+    package="tooshy.hufstalk">
 
     <application
         android:allowBackup="true"
@@ -11,7 +11,7 @@
         <activity
             android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/app_name"
-            android:name=".SplashActivity">
+            android:name="tooshy.hufstalk.activity.SplashActivity">
         <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
@@ -20,14 +20,14 @@
         <activity
             android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/app_name"
-            android:name=".MainActivity"> </activity>
+            android:name="tooshy.hufstalk.activity.MainActivity"> </activity>
         <activity
             android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/app_name"
-            android:name=".TopicActivity"> </activity>
+            android:name="tooshy.hufstalk.activity.TopicActivity"> </activity>
         <activity
             android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/app_name"
-            android:name=".Loading"> </activity>
+            android:name="tooshy.hufstalk.activity.LoadingActivity"> </activity>
     </application>
 </manifest>

@@ -1,9 +1,11 @@
-package com.example.seunghyun.chatactivity;
+package tooshy.hufstalk.activity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+
+import tooshy.hufstalk.R;
 
 /**
  * Created by USER on 2016-03-29.
