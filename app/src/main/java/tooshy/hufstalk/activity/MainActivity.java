@@ -3,6 +3,8 @@ package tooshy.hufstalk.activity;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -41,13 +43,24 @@ public class MainActivity extends AppCompatActivity{
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
+    private String chatText1;
     private Button buttonSend;
     Intent intent;
-    private boolean side = false;
+    private boolean right = false;
+    private boolean left = true;
+    public boolean resive = false;
+    private Handler mMainHandler;
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_chating);
+        mMainHandler = new Handler();
+        buttonSend = (Button) findViewById(R.id.buttonSend);
+        listView = (ListView) findViewById(R.id.listView1);
+        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.activity_chat_singlemessage);
+        listView.setAdapter(chatArrayAdapter);
+        chatText = (EditText) findViewById(R.id.chatText);
+
         options.setCluster("ap1");
         pusher = new Pusher("f5ad826261aeb8068be6", options);
         // Pusher API 이용
@@ -56,14 +69,24 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onEvent(String channelName, String eventName, final String data) {
                 System.out.println(data);
+
                 try {
                     JSONObject message_data = new JSONObject(data);
                     String message_content = message_data.getString("message");
                     System.out.println("Received Data String: " + message_content);
+                    chatText1 = message_content;
+                    resive = false;
+                    mMainHandler.post(mRunnable);
+
+                    System.out.println("Received Data String: " + resive);
+
+                    // sendChatMessage(false);
+
                     // 리스트에 채팅 메시지 추가(상대방)
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
             }
         });
 
@@ -80,19 +103,10 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-
-        buttonSend = (Button) findViewById(R.id.buttonSend);
-
-        listView = (ListView) findViewById(R.id.listView1);
-
-        chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.activity_chat_singlemessage);
-        listView.setAdapter(chatArrayAdapter);
-
-        chatText = (EditText) findViewById(R.id.chatText);
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    return sendChatMessage();
+                    return sendChatMessage(true);
                 }
                 return false;
             }
@@ -101,7 +115,7 @@ public class MainActivity extends AppCompatActivity{
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                sendChatMessage();
+                sendChatMessage(true);
             }
         });
 
@@ -116,13 +130,22 @@ public class MainActivity extends AppCompatActivity{
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
-
     }
+    private Runnable mRunnable = new Runnable() {
+        @Override
+        public void run() {
+            sendChatMessage(false);
+        }
+    };
 
-    private boolean sendChatMessage(){
-        chatArrayAdapter.add(new ChatMessage(side, chatText.getText().toString()));
-        chatText.setText("");
-        side = !side;
+
+    private boolean sendChatMessage( boolean a){
+        if (a==true) {
+            chatArrayAdapter.add(new ChatMessage(right, chatText.getText().toString()));
+            chatText.setText("");
+        }else{
+            chatArrayAdapter.add(new ChatMessage(left, chatText1));
+        }
         return true;
     }
 }

@@ -63,5 +63,13 @@ public class ChatArrayAdapter extends ArrayAdapter {
     public Bitmap decodeToBitmap(byte[] decodedByte) {
         return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length);
     }
+    @Override
+    public boolean areAllItemsEnabled() {
+        return false;
+    }
+    @Override
+    public boolean isEnabled(int position) {
+        return false;
+    }
 
 }
