@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity
     Intent intent;
     private boolean side = false;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -55,14 +55,12 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 sendChatMessage();
             }
         });
-
 
         listView.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         listView.setAdapter(chatArrayAdapter);
@@ -75,8 +73,6 @@ public class MainActivity extends AppCompatActivity
                 listView.setSelection(chatArrayAdapter.getCount() - 1);
             }
         });
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
