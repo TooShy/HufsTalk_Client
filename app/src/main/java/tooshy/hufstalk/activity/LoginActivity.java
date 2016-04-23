@@ -69,7 +69,6 @@ public class LoginActivity extends Activity {
 
             @Override
             public void onCancel() {
-                LoginManager.getInstance().logOut();
                 finish();
             }
         });
