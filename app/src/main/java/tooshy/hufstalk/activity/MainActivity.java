@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.facebook.FacebookSdk;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.Channel;
@@ -34,7 +35,7 @@ import tooshy.hufstalk.R;
 import tooshy.hufstalk.adapter.ChatArrayAdapter;
 import tooshy.hufstalk.model.ChatMessage;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     PusherOptions options = new PusherOptions();
 
     Pusher pusher;
@@ -52,6 +53,7 @@ public class MainActivity extends AppCompatActivity{
     private Handler mMainHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chating);
         mMainHandler = new Handler();
@@ -146,6 +148,20 @@ public class MainActivity extends AppCompatActivity{
         }else{
             chatArrayAdapter.add(new ChatMessage(left, chatText1));
         }
+        return true;
+    }
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        if (id == R.id.nav_camera) {
+            // Handle the camera action
+        } else if (id == R.id.nav_gallery) {
+
+        }
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 }

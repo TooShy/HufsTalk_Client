@@ -21,6 +21,7 @@ android {
 
 repositories {
     maven { url 'http://clojars.org/repo' }
+    mavenCentral()
 }
 
 dependencies {
@@ -29,4 +30,5 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.pusher:pusher-java-client:1.0.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.+'
 }
