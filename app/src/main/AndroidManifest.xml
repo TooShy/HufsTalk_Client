@@ -12,25 +12,22 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:theme="@style/AppTheme.NoActionBar"
+            android:name=".SplashActivity"
             android:label="@string/app_name"
-            android:name="tooshy.hufstalk.activity.SplashActivity">
-        <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-    </intent-filter>
-    </activity>
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/app_name"
-            android:name="tooshy.hufstalk.activity.MainActivity"> </activity>
-        <activity
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/app_name"
-            android:name="tooshy.hufstalk.activity.TopicActivity"> </activity>
-        <activity
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/app_name"
-            android:name="tooshy.hufstalk.activity.LoadingActivity"> </activity>
+            android:name=".ChatActivity"
+            android:label="HufsTalk_Client"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".ChatBubbleActivity"/>
+
+
     </application>
 </manifest>
