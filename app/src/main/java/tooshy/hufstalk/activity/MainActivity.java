@@ -2,9 +2,13 @@ package tooshy.hufstalk.activity;
 
 import android.content.Intent;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -18,7 +22,9 @@ import android.view.MenuItem;
 import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
@@ -32,12 +38,19 @@ import com.pusher.client.connection.ConnectionStateChange;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import tooshy.hufstalk.R;
 import tooshy.hufstalk.adapter.ChatArrayAdapter;
 import tooshy.hufstalk.model.ChatMessage;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     PusherOptions options = new PusherOptions();
+    LinearLayout container;
 
     Pusher pusher;
     private static final String TAG = "ChatActivity";
@@ -63,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         chatArrayAdapter = new ChatArrayAdapter(getApplicationContext(), R.layout.activity_chat_singlemessage);
         listView.setAdapter(chatArrayAdapter);
         chatText = (EditText) findViewById(R.id.chatText);
+        container = (LinearLayout) findViewById(R.id.nav_report);
 
         options.setCluster("ap1");
         pusher = new Pusher("f5ad826261aeb8068be6", options);
