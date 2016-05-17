@@ -1,23 +1,38 @@
 package tooshy.hufstalk.activity;
 
-import java.util.Arrays;
-
-import org.json.JSONObject;
+/**
+ * Created by USER on 2016-04-30.
+ */
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
-import com.facebook.GraphRequest.GraphJSONObjectCallback;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.android.volley.RequestQueue;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.security.Key;
+import java.util.Arrays;
+
+import tooshy.hufstalk.R;
+
 /**
  * Created by USER on 2016-04-23.
  */
@@ -27,6 +42,7 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final String[] id = new String[2];
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
@@ -39,13 +55,18 @@ public class LoginActivity extends Activity {
             public void onSuccess(final LoginResult result) {
 
                 GraphRequest request;
-                request = GraphRequest.newMeRequest(result.getAccessToken(), new GraphJSONObjectCallback() {
+                request = GraphRequest.newMeRequest(result.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
 
                     @Override
                     public void onCompleted(JSONObject user, GraphResponse response) {
                         if (response.getError() != null) {
-
                         } else {
+                            try {
+                                id[0] = user.get("id").toString();
+                                id[1] = user.get("gender").toString();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                             Log.i("TAG", "user: " + user.toString());
                             Log.i("TAG", "AccessToken: " + result.getAccessToken().getToken());
                             setResult(RESULT_OK);
@@ -72,7 +93,41 @@ public class LoginActivity extends Activity {
                 finish();
             }
         });
+        //POST
+        RequestQueue Queue = Volley.newRequestQueue(this);
+        JSONObject param = new JSONObject();
+        Boolean gender;
+        if (id[1]=="male"){
+            gender=true;
+        }
+        else{
+            gender=false;
+        }
+        try {
+            param.put("uid", id[0]);
+            param.put("gender", gender);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
+                "http://125.209.199.214:3000/api/client/v1/users/join", param, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.i("Response1", response.toString());
+                try {
+                    System.out.println(response.getJSONObject("data").getJSONObject("session").get("token").toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.i("Response2", error.toString());
+            }
+        });
+        Queue.add(jsonObjectRequest);
     }
 
     @Override
@@ -81,5 +136,7 @@ public class LoginActivity extends Activity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }
+
+
 
 
