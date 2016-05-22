@@ -97,6 +97,7 @@ public class TopicActivity extends Activity{
                         try {
                             JSONObject channel_data = new JSONObject(data);
                             channel_name = channel_data.getString("channel_name");
+                            Log.v("Hufstalk", "Received Channel Name : " + channel_name);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -104,7 +105,7 @@ public class TopicActivity extends Activity{
 
                         finish();
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra("current_channel_name",channel_name);
+                        intent.putExtra("channel_name",channel_name);
                         startActivity(intent);
                     }
                 });
