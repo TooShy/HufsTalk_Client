@@ -56,7 +56,6 @@ public class LoginActivity extends Activity {
 
                 GraphRequest request;
                 request = GraphRequest.newMeRequest(result.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-
                     @Override
                     public void onCompleted(JSONObject user, GraphResponse response) {
                         if (response.getError() != null) {
@@ -81,13 +80,11 @@ public class LoginActivity extends Activity {
                 request.setParameters(parameters);
                 request.executeAsync();
             }
-
             @Override
             public void onError(FacebookException error) {
                 Log.e("test", "Error: " + error);
                 finish();
             }
-
             @Override
             public void onCancel() {
                 finish();
@@ -109,7 +106,6 @@ public class LoginActivity extends Activity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST,
                 "http://125.209.199.214:3000/api/client/v1/users/join", param, new Response.Listener<JSONObject>() {
             @Override
@@ -129,14 +125,9 @@ public class LoginActivity extends Activity {
         });
         Queue.add(jsonObjectRequest);
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 }
-
-
-
-

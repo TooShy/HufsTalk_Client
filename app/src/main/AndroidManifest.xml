@@ -43,10 +43,6 @@
             android:label="@string/app_name"
             android:name="tooshy.hufstalk.activity.LoginActivity"> </activity>
         <activity
-            android:theme="@style/AppTheme.NoActionBar"
-            android:label="@string/app_name"
-            android:name="tooshy.hufstalk.activity.FaceloginActivity"> </activity>
-        <activity
             android:name="com.facebook.FacebookActivity"/>
     </application>
 </manifest>

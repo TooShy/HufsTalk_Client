@@ -3,13 +3,17 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/splash">
-    <TextView
-        android:text="Hufs Talk"
-        android:layout_gravity="center"
-        android:layout_marginTop="100dp"
+    android:background="@drawable/splash"
+    android:weightSum="1">
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="50dp"
-        android:textColor="#2ff"/>
+        android:textColor="#ffff"
+        android:text="LOGIN"
+        android:textSize="25dp"
+        android:id="@+id/login"
+        android:background="#00000000"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="0.09"
+        android:visibility="gone"/>
 </LinearLayout>
