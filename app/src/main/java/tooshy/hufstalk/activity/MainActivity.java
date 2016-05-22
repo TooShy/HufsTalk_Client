@@ -2,21 +2,15 @@ package tooshy.hufstalk.activity;
 
 import android.content.Intent;
 import android.database.DataSetObserver;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AbsListView;
@@ -24,7 +18,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
@@ -32,20 +25,14 @@ import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.Channel;
 import com.pusher.client.channel.SubscriptionEventListener;
-import com.pusher.client.connection.ConnectionEventListener;
-import com.pusher.client.connection.ConnectionStateChange;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import tooshy.hufstalk.R;
 import tooshy.hufstalk.adapter.ChatArrayAdapter;
+import tooshy.hufstalk.helper.Global;
 import tooshy.hufstalk.model.ChatMessage;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
@@ -58,14 +45,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
-    private String chatText1;
+    private String chatTextOthers;
     private Button buttonSend;
     Intent intent;
     private boolean right = false;
     private boolean left = true;
     public boolean resive = false;
     private Handler mMainHandler;
-    @Override
+    Global global = Global.getInstance();
     protected void onCreate(Bundle savedInstanceState) {
         FacebookSdk.sdkInitialize(getApplicationContext());
         super.onCreate(savedInstanceState);
@@ -78,45 +65,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         chatText = (EditText) findViewById(R.id.chatText);
         container = (LinearLayout) findViewById(R.id.nav_report);
 
-        options.setCluster("ap1");
-        pusher = new Pusher("f5ad826261aeb8068be6", options);
+        pusher = global.pusher;
+
+        String channel_name = this.getIntent().getStringExtra("channel_name");
+        Log.v("Hufstalk", "current channel name : " + channel_name);
         // Pusher API 이용
-        Channel channel = pusher.subscribe("test_channel");
-        channel.bind("my_event", new SubscriptionEventListener() {
+        Channel channel = pusher.subscribe(channel_name);
+
+        channel.bind("chat", new SubscriptionEventListener() {
             @Override
             public void onEvent(String channelName, String eventName, final String data) {
                 System.out.println(data);
-
                 try {
                     JSONObject message_data = new JSONObject(data);
                     String message_content = message_data.getString("message");
                     System.out.println("Received Data String: " + message_content);
-                    chatText1 = message_content;
+                    chatTextOthers = message_content;
                     resive = false;
                     mMainHandler.post(mRunnable);
 
                     System.out.println("Received Data String: " + resive);
 
-                    // sendChatMessage(false);
+                    sendChatMessage(false);
 
                     // 리스트에 채팅 메시지 추가(상대방)
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-            }
-        });
-
-        pusher.connect(new ConnectionEventListener() {
-            @Override
-            public void onConnectionStateChange(ConnectionStateChange connectionStateChange) {
-                System.out.println("Connection State changed!");
-            }
-
-            @Override
-            public void onError(String s, String s1, Exception e) {
-                System.out.println(s);
-                System.out.println(s1);
             }
         });
 
@@ -158,12 +134,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     };
 
 
-    private boolean sendChatMessage( boolean a){
+    private boolean sendChatMessage(boolean a){
         if (a==true) {
             chatArrayAdapter.add(new ChatMessage(right, chatText.getText().toString()));
             chatText.setText("");
         }else{
-            chatArrayAdapter.add(new ChatMessage(left, chatText1));
+            chatArrayAdapter.add(new ChatMessage(left, chatTextOthers));
         }
         return true;
     }

@@ -3,15 +3,17 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingTop = "150dip"
     >
 
         <Button
             android:id="@+id/fb"
-            android:layout_width="fill_parent"
+            android:layout_gravity = "center"
+            android:layout_width="300dip"
             android:layout_height="wrap_content"
             android:background="#416BC1"
             android:onClick="onClick"
-            android:text="FaceBook"
+            android:text="FaceBook으로 로그인 하기"
             android:textColor="#ffffff"
             android:textStyle="bold" />
 
