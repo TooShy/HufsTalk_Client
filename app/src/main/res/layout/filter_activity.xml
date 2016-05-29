@@ -6,7 +6,7 @@
     >
 
     <LinearLayout
-        android:id = "@+id/match_progress_layout"
+        android:id = "@+id/filter_progress_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"
@@ -18,28 +18,45 @@
             android:gravity="center"
             android:layout_width="300dip"
             android:layout_height="50dip"
-            android:text = "대화 상대를 찾는 중입니다"/>
+            android:text = "금지어를 등록하는 중입니다."/>
+
         <ProgressBar
             android:layout_gravity = "center"
-            android:id="@+id/match_progress"
+            android:id="@+id/filter_progress"
             android:visibility="visible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
     </LinearLayout>
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/topic_list">
-    </ListView>
+    <TextView
+        android:layout_margin="30dip"
+        android:id="@+id/filter_text"
+        android:layout_gravity = "center"
+        android:layout_width="320dip"
+        android:layout_height="50dip"
+        android:textSize="20dip"
+        android:gravity="center"
+        android:text = "채팅방에서 상대방이 말하면\n 강퇴당하는 금지어를 입력하세요"/>
+
+    <EditText
+        android:id="@+id/filter_list"
+        android:layout_alignTop="@id/filter_text"
+        android:layout_marginTop="70dip"
+        android:layout_marginLeft = "30dip"
+        android:layout_gravity = "center"
+        android:layout_width="320dip"
+        android:layout_height="50dip"
+        android:textSize = "15dip"
+        android:inputType="textMultiLine"
+        android:hint = "콤마(',')로 구분하세요. 띄어쓰기는 무시됩니다"/>
 
     <Button
-        android:id = "@+id/chatting_start"
+        android:id = "@+id/filter_next_btn"
         android:layout_width="match_parent"
         android:layout_height="50dip"
         android:background="#416BC1"
         android:textColor="#ffffff"
         android:layout_alignParentBottom="true"
-        android:text = "매칭 시작"/>
+        android:text = "다음"/>
 
 </RelativeLayout>

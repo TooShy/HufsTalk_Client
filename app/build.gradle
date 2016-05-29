@@ -31,5 +31,5 @@ dependencies {
     compile 'com.android.support:design:23.1.1'
     compile 'com.pusher:pusher-java-client:1.0.0'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
-    compile project(':volley')
+    compile 'com.mcxiaoke.volley:library:1.0.19'
 }

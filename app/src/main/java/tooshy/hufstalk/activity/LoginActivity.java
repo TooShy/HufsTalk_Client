@@ -146,8 +146,8 @@ public class LoginActivity extends Activity{
         }else{
             global.SESSION_TOKEN = prefs.getString("token","");
             Log.v("Hufstalk", "Current Token is " + global.SESSION_TOKEN);
-            // 토픽 액티비티 시작
-            Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
+            // 필터 액티비티 시작
+            Intent intent = new Intent(getApplicationContext(), FilterActivity.class);
             finish();
             startActivity(intent);
         }
@@ -192,7 +192,7 @@ public class LoginActivity extends Activity{
                                         global.SESSION_TOKEN = token;
                                         // 토픽 액티비티 시작
                                         finish();
-                                        Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
+                                        Intent intent = new Intent(getApplicationContext(), FilterActivity.class);
                                         startActivity(intent);
                                     }else{
                                         Log.v("Hufstalk", "Login Success");

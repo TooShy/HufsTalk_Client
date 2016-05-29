@@ -27,11 +27,12 @@ import tooshy.hufstalk.R;
 import tooshy.hufstalk.helper.Global;
 
 /**
- * Created by USER on 2016-04-09.
+ * Created by tokirin on 16. 5. 29.
  */
-public class TopicActivity extends Activity{
-    Button startChatting;
-    EditText topicList;
+public class FilterActivity extends Activity {
+
+    Button filterNextBtn;
+    EditText filterList;
     LinearLayout progressLayout;
     RequestQueue Queue;
     Global global = Global.getInstance();
@@ -39,37 +40,38 @@ public class TopicActivity extends Activity{
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.topic_activity);
+        setContentView(R.layout.filter_activity);
         Queue = Volley.newRequestQueue(getApplicationContext());
         pusher = global.pusher;
 
+        filterList = (EditText) findViewById(R.id.filter_list);
+        filterNextBtn = (Button) findViewById(R.id.filter_next_btn);
+        progressLayout = (LinearLayout) findViewById(R.id.filter_progress_layout);
 
-        startChatting = (Button) findViewById(R.id.chatting_start);
-        progressLayout = (LinearLayout) findViewById(R.id.match_progress_layout);
-
-        //Topic Activity Working on..
-        startChatting.setOnClickListener(new View.OnClickListener() {
+        filterNextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //String listStr = topicList.getText().toString();
+                progressLayout.setVisibility(View.VISIBLE);
+                String listStr = filterList.getText().toString();
                 JSONObject setTopicParams = new JSONObject();
                 try {
                     setTopicParams.put("token",global.SESSION_TOKEN);
-                    setTopicParams.put("topic_list",listStr);
+                    setTopicParams.put("filter_string",listStr);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
                 JsonObjectRequest setTopicRequest = new JsonObjectRequest(Request.Method.POST,
-                        global.HOST_API_PREFIX + global.API_VERSION + "/topics/set", setTopicParams, new Response.Listener<JSONObject>() {
+                        global.HOST_API_PREFIX + global.API_VERSION + "/users/set_filter", setTopicParams, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
                             if (response.getInt("code") == 200) {
-                                sendMatchRequest();
-
-                        }
+                                progressLayout.setVisibility(View.INVISIBLE);
+                                finish();
+                                Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
+                                startActivity(intent);
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -78,37 +80,10 @@ public class TopicActivity extends Activity{
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.v("Hufstalk", error.getMessage().toString());
+
                     }
                 });
                 Queue.add(setTopicRequest);
-            }
-        });
-
-        Channel channel = pusher.subscribe(global.SESSION_TOKEN);
-        channel.bind("matched", new SubscriptionEventListener() {
-            @Override
-            public void onEvent(String channelName, String eventName, final String data) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressLayout.setVisibility(View.INVISIBLE);
-                        String channel_name = "";
-                        try {
-                            JSONObject channel_data = new JSONObject(data);
-                            channel_name = channel_data.getString("channel_name");
-                            Log.v("Hufstalk", "Received Channel Name : " + channel_name);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-
-                        finish();
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra("channel_name",channel_name);
-                        startActivity(intent);
-                    }
-                });
-
             }
         });
 
@@ -139,4 +114,3 @@ public class TopicActivity extends Activity{
         Queue.add(matchRequest);
     }
 }
-

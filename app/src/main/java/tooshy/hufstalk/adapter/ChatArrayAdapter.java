@@ -22,7 +22,6 @@ import tooshy.hufstalk.model.ChatMessage;
  */
 public class ChatArrayAdapter extends ArrayAdapter {
 
-
     private TextView chatText;
     private List chatMessageList = new ArrayList();
     private LinearLayout singleMessageContainer;
