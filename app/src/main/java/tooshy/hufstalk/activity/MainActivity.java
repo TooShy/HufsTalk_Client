@@ -18,7 +18,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.pusher.client.Pusher;
@@ -26,9 +33,12 @@ import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.Channel;
 import com.pusher.client.channel.SubscriptionEventListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+import java.util.Queue;
 
 import tooshy.hufstalk.R;
 import tooshy.hufstalk.adapter.ChatArrayAdapter;
@@ -67,10 +77,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         pusher = global.pusher;
 
+
+
         String channel_name = this.getIntent().getStringExtra("channel_name");
         Log.v("Hufstalk", "current channel name : " + channel_name);
         // Pusher API 이용
         Channel channel = pusher.subscribe(channel_name);
+
+
+
 
         channel.bind("chat", new SubscriptionEventListener() {
             @Override
@@ -94,6 +109,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
             }
+        });
+
+        Channel ban =pusher.subscribe(channel_name);
+        ban.bind("ban", new SubscriptionEventListener() {
+            @Override
+            public void onEvent(String channelName, String eventName, String token) {
+                if (token == global.SESSION_TOKEN) {
+                    Toast.makeText(getApplicationContext(), "당신은 금지어를입력해 채팅방에서 강퇴당하셨습니다.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+                else {
+                    Toast.makeText(getApplicationContext(), "상대방이 금지어를입력해 채팅이 종료되었습니다.", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+
         });
 
         chatText.setOnKeyListener(new View.OnKeyListener() {
@@ -186,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_logout){
             System.out.println("확인");
             LoginManager.getInstance().logOut();
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
             startActivity(intent);
             finish();
         }

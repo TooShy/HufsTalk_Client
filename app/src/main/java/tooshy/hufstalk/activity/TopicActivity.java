@@ -2,12 +2,18 @@ package tooshy.hufstalk.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,8 +26,14 @@ import com.pusher.client.Pusher;
 import com.pusher.client.channel.Channel;
 import com.pusher.client.channel.SubscriptionEventListener;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.sql.Time;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import tooshy.hufstalk.R;
 import tooshy.hufstalk.helper.Global;
@@ -29,6 +41,8 @@ import tooshy.hufstalk.helper.Global;
 /**
  * Created by USER on 2016-04-09.
  */
+
+
 public class TopicActivity extends Activity{
     Button startChatting;
     EditText topicList;
@@ -36,16 +50,75 @@ public class TopicActivity extends Activity{
     RequestQueue Queue;
     Global global = Global.getInstance();
     Pusher pusher;
+    String listStr="";
+    private ListView  listView;
+    private ArrayList<String> arraylist;
+    private ArrayAdapter<String> adapter;
+    String[] in = {"","","","","","","","","",""};
+    int[] i= new int[10];
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.topic_activity);
         Queue = Volley.newRequestQueue(getApplicationContext());
         pusher = global.pusher;
+        final String[] topic = new String[10];
+
+
+
+
+
 
 
         startChatting = (Button) findViewById(R.id.chatting_start);
         progressLayout = (LinearLayout) findViewById(R.id.match_progress_layout);
+
+
+        JsonObjectRequest listRequest = new JsonObjectRequest(Request.Method.GET,
+                global.HOST_API_PREFIX + global.API_VERSION + "/topics/total_topic_list", new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    JSONObject data = response.getJSONObject("data");
+                    JSONArray topicList = data.getJSONArray("topic_list");
+
+                    for(int i = 0; i<topicList.length(); i++){
+                        JSONObject order = topicList.getJSONObject(i);
+                        topic[i] = order.get("topic_name").toString();
+                        in[i] = order.get("topic_name").toString();
+                        System.out.println(topic[i]);
+                        //System.out.println("asdf");
+                    }
+                    make();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("Join Response Error", error.toString());
+            }
+        });
+        Queue.add(listRequest);
+
+        setResult(RESULT_OK);
+        /*
+        System.out.println("start");
+        for (int i=0;i<10;i++){
+            System.out.println(in[i]);
+        }
+*/
+
+
+
+
+
+
+
+
 
         //Topic Activity Working on..
         startChatting.setOnClickListener(new View.OnClickListener() {
@@ -55,8 +128,8 @@ public class TopicActivity extends Activity{
                 //String listStr = topicList.getText().toString();
                 JSONObject setTopicParams = new JSONObject();
                 try {
-                    setTopicParams.put("token",global.SESSION_TOKEN);
-                    setTopicParams.put("topic_list",listStr);
+                    setTopicParams.put("token", global.SESSION_TOKEN);
+                    setTopicParams.put("topic_list", listStr);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -69,7 +142,7 @@ public class TopicActivity extends Activity{
                             if (response.getInt("code") == 200) {
                                 sendMatchRequest();
 
-                        }
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -104,7 +177,7 @@ public class TopicActivity extends Activity{
 
                         finish();
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.putExtra("channel_name",channel_name);
+                        intent.putExtra("channel_name", channel_name);
                         startActivity(intent);
                     }
                 });
@@ -112,6 +185,39 @@ public class TopicActivity extends Activity{
             }
         });
 
+    }
+
+    public void make(){
+        arraylist = new ArrayList<String>();
+        for (int i=0;i<10;i++) {
+            arraylist.add(in[i]);
+        }
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,arraylist);
+        ListView listView = (ListView) findViewById(R.id.topic_list);
+        listView.setAdapter(adapter);
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+        listView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+                String item = (String) adapter.getItem(position);
+                if (listStr == "") {
+                    listStr = item;
+                } else {
+                    listStr = listStr + "," + item;
+                }
+                if(i[position]==0) {
+                    view.setBackgroundColor(Color.parseColor("#416BC1"));
+                    i[position]=1;
+                }
+                else{
+                    view.setBackgroundColor(Color.parseColor("#ffffff"));
+                    i[position]=0;
+                }
+            }
+        });
     }
 
     public void sendMatchRequest(){
