@@ -33,6 +33,10 @@
         <activity
             android:theme="@style/AppTheme.NoActionBar"
             android:label="@string/app_name"
+            android:name="tooshy.hufstalk.activity.FilterActivity"> </activity>
+        <activity
+            android:theme="@style/AppTheme.NoActionBar"
+            android:label="@string/app_name"
             android:name="tooshy.hufstalk.activity.TopicActivity"> </activity>
         <activity
             android:theme="@style/AppTheme.NoActionBar"

@@ -20,7 +20,7 @@ public class SplashActivity extends Activity {
         hd.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
+                Intent intent = new Intent(getApplicationContext(),FaceloginActivity.class);
                 startActivity(intent);
                 finish();
             }

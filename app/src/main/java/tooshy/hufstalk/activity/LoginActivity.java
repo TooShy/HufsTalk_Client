@@ -197,14 +197,12 @@ public class LoginActivity extends Activity{
                                     }else{
                                         Log.v("Hufstalk", "Login Success");
                                         Log.v("Hufstalk", response.toString());
-
                                     }
                                 }catch(JSONException e){}
                             }
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-
                             }
                         });
                         Queue.add(loginRequest);

@@ -66,11 +66,6 @@ public class TopicActivity extends Activity{
         final String[] topic = new String[10];
 
 
-
-
-
-
-
         startChatting = (Button) findViewById(R.id.chatting_start);
         progressLayout = (LinearLayout) findViewById(R.id.match_progress_layout);
 

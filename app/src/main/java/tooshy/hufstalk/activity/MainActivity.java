@@ -38,7 +38,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-import java.util.Queue;
+
 
 import tooshy.hufstalk.R;
 import tooshy.hufstalk.adapter.ChatArrayAdapter;
@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Pusher pusher;
     private static final String TAG = "ChatActivity";
 
+
+    RequestQueue Queue;
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         listView.setAdapter(chatArrayAdapter);
         chatText = (EditText) findViewById(R.id.chatText);
         container = (LinearLayout) findViewById(R.id.nav_report);
+        Queue = Volley.newRequestQueue(getApplicationContext());
 
         pusher = global.pusher;
 
@@ -111,8 +114,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        Channel ban =pusher.subscribe(channel_name);
-        ban.bind("ban", new SubscriptionEventListener() {
+        /*//Channel ban =pusher.subscribe(channel_name);
+        channel.bind("ban", new SubscriptionEventListener() {
             @Override
             public void onEvent(String channelName, String eventName, String token) {
                 if (token == global.SESSION_TOKEN) {
@@ -131,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         });
-
+    */
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
@@ -171,9 +174,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     private boolean sendChatMessage(boolean a){
+        String channel_name = this.getIntent().getStringExtra("channel_name");
         if (a==true) {
             chatArrayAdapter.add(new ChatMessage(right, chatText.getText().toString()));
             chatText.setText("");
+
+            JSONObject setTopicParams = new JSONObject();
+            try {
+                setTopicParams.put("token",global.SESSION_TOKEN);
+                setTopicParams.put("channel",channel_name);
+                setTopicParams.put("message",chatText.getText().toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            JsonObjectRequest setchatingRequest = new JsonObjectRequest(Request.Method.POST,
+                    global.HOST_API_PREFIX + global.API_VERSION + "/chat",setTopicParams , new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        if (response.getInt("code") == 200) {
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.v("Hufstalk", error.getMessage().toString());
+                }
+            });
+            Queue.add(setchatingRequest);
+
         }else{
             chatArrayAdapter.add(new ChatMessage(left, chatTextOthers));
         }

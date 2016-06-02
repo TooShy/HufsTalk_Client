@@ -60,16 +60,16 @@ public class FilterActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
                 JsonObjectRequest setTopicRequest = new JsonObjectRequest(Request.Method.POST,
-                        global.HOST_API_PREFIX + global.API_VERSION + "/users/set_filter", setTopicParams, new Response.Listener<JSONObject>() {
+                        global.HOST_API_PREFIX + global.API_VERSION + "/users/set_filter" ,setTopicParams, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
                             if (response.getInt("code") == 200) {
                                 progressLayout.setVisibility(View.INVISIBLE);
+                                System.out.println("테스트");
                                 finish();
-                                Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
+                                Intent intent = new Intent(getApplicationContext(),TopicActivity.class);
                                 startActivity(intent);
                             }
                         } catch (JSONException e) {
@@ -80,24 +80,19 @@ public class FilterActivity extends Activity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.v("Hufstalk", error.getMessage().toString());
-
                     }
                 });
                 Queue.add(setTopicRequest);
             }
         });
-
     }
-
     public void sendMatchRequest(){
-
         JSONObject matchParams = new JSONObject();
         try {
             matchParams.put("token",global.SESSION_TOKEN);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         StringRequest matchRequest = new StringRequest(Request.Method.GET,
                 global.HOST_API_PREFIX + global.API_VERSION + "/chat/match?token=" + global.SESSION_TOKEN, new Response.Listener<String>() {
             @Override
