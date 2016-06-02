@@ -67,7 +67,6 @@ public class FilterActivity extends Activity {
                         try {
                             if (response.getInt("code") == 200) {
                                 progressLayout.setVisibility(View.INVISIBLE);
-                                System.out.println("테스트");
                                 finish();
                                 Intent intent = new Intent(getApplicationContext(),TopicActivity.class);
                                 startActivity(intent);
@@ -85,27 +84,5 @@ public class FilterActivity extends Activity {
                 Queue.add(setTopicRequest);
             }
         });
-    }
-    public void sendMatchRequest(){
-        JSONObject matchParams = new JSONObject();
-        try {
-            matchParams.put("token",global.SESSION_TOKEN);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        StringRequest matchRequest = new StringRequest(Request.Method.GET,
-                global.HOST_API_PREFIX + global.API_VERSION + "/chat/match?token=" + global.SESSION_TOKEN, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.v("Hufstalk", "Start Matching");
-                progressLayout.setVisibility(View.VISIBLE);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.v("Hufstalk", error.getMessage().toString());
-            }
-        });
-        Queue.add(matchRequest);
     }
 }

@@ -29,11 +29,9 @@ import com.android.volley.toolbox.Volley;
 import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.pusher.client.Pusher;
-import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.Channel;
 import com.pusher.client.channel.SubscriptionEventListener;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,24 +44,18 @@ import tooshy.hufstalk.helper.Global;
 import tooshy.hufstalk.model.ChatMessage;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
-    PusherOptions options = new PusherOptions();
     LinearLayout container;
-
     Pusher pusher;
-    private static final String TAG = "ChatActivity";
-
-
     RequestQueue Queue;
     private ChatArrayAdapter chatArrayAdapter;
     private ListView listView;
     private EditText chatText;
-    private String chatTextOthers;
     private Button buttonSend;
-    Intent intent;
     private boolean right = false;
     private boolean left = true;
-    public boolean resive = false;
+    public boolean receive = false;
     private Handler mMainHandler;
+    String channelName = "";
     Global global = Global.getInstance();
     protected void onCreate(Bundle savedInstanceState) {
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -77,68 +69,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         chatText = (EditText) findViewById(R.id.chatText);
         container = (LinearLayout) findViewById(R.id.nav_report);
         Queue = Volley.newRequestQueue(getApplicationContext());
-
         pusher = global.pusher;
-
-
-
-        String channel_name = this.getIntent().getStringExtra("channel_name");
-        Log.v("Hufstalk", "current channel name : " + channel_name);
+        channelName = this.getIntent().getStringExtra("channel_name");
+        Log.v("Hufstalk", "current channel name : " + channelName);
         // Pusher API 이용
-        Channel channel = pusher.subscribe(channel_name);
-
-
-
+        Channel channel = pusher.subscribe(channelName);
 
         channel.bind("chat", new SubscriptionEventListener() {
             @Override
             public void onEvent(String channelName, String eventName, final String data) {
                 System.out.println(data);
-                try {
-                    JSONObject message_data = new JSONObject(data);
-                    String message_content = message_data.getString("message");
-                    System.out.println("Received Data String: " + message_content);
-                    chatTextOthers = message_content;
-                    resive = false;
-                    mMainHandler.post(mRunnable);
-
-                    System.out.println("Received Data String: " + resive);
-
-                    sendChatMessage(false);
-
-                    // 리스트에 채팅 메시지 추가(상대방)
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject message_data = new JSONObject(data);
+                            if(message_data.getString("token").equals(global.SESSION_TOKEN)){
+                                showChatMessage(true,message_data.getString("message"));
+                            }else{
+                                showChatMessage(false,message_data.getString("message"));
+                            }
+                            // 리스트에 채팅 메시지 추가(상대방)
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         });
 
-        /*//Channel ban =pusher.subscribe(channel_name);
+
         channel.bind("ban", new SubscriptionEventListener() {
             @Override
-            public void onEvent(String channelName, String eventName, String token) {
-                if (token == global.SESSION_TOKEN) {
-                    Toast.makeText(getApplicationContext(), "당신은 금지어를입력해 채팅방에서 강퇴당하셨습니다.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-                else {
-                    Toast.makeText(getApplicationContext(), "상대방이 금지어를입력해 채팅이 종료되었습니다.", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), TopicActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
+            public void onEvent(String channelName, String eventName, final String token) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (token == global.SESSION_TOKEN) {
+                            Toast.makeText(getApplicationContext(), "당신은 금지어를 입력해 채팅방에서 강퇴당하셨습니다.", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                        else {
+                            Toast.makeText(getApplicationContext(), "상대방이 금지어를 입력해 채팅이 종료되었습니다.", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                });
             }
-
-
         });
-    */
+
         chatText.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    return sendChatMessage(true);
+                    sendChatMessage();
+                    return true;
                 }
                 return false;
             }
@@ -147,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                sendChatMessage(true);
+                sendChatMessage();
             }
         });
 
@@ -165,51 +149,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
-    private Runnable mRunnable = new Runnable() {
-        @Override
-        public void run() {
-            sendChatMessage(false);
+    private void sendChatMessage(){
+
+        JSONObject setTopicParams = new JSONObject();
+        try {
+            setTopicParams.put("token",global.SESSION_TOKEN);
+            setTopicParams.put("channel",channelName);
+            setTopicParams.put("message",chatText.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-    };
 
-
-    private boolean sendChatMessage(boolean a){
-        String channel_name = this.getIntent().getStringExtra("channel_name");
-        if (a==true) {
-            chatArrayAdapter.add(new ChatMessage(right, chatText.getText().toString()));
-            chatText.setText("");
-
-            JSONObject setTopicParams = new JSONObject();
-            try {
-                setTopicParams.put("token",global.SESSION_TOKEN);
-                setTopicParams.put("channel",channel_name);
-                setTopicParams.put("message",chatText.getText().toString());
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            JsonObjectRequest setchatingRequest = new JsonObjectRequest(Request.Method.POST,
-                    global.HOST_API_PREFIX + global.API_VERSION + "/chat",setTopicParams , new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    try {
-                        if (response.getInt("code") == 200) {
-
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+        JsonObjectRequest setchatingRequest = new JsonObjectRequest(Request.Method.POST,
+                global.HOST_API_PREFIX + global.API_VERSION + "/chat",setTopicParams , new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    if (response.getInt("code") == 200) {
+                        Log.v("Hufstalk","Send message Success");
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.v("Hufstalk", error.getMessage().toString());
-                }
-            });
-            Queue.add(setchatingRequest);
-
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.v("Hufstalk", error.getMessage().toString());
+            }
+        });
+        Queue.add(setchatingRequest);
+    }
+    private boolean showChatMessage(boolean flag, String message){
+        if (flag) {
+            chatArrayAdapter.add(new ChatMessage(right, message));
+            chatText.setText("");
         }else{
-            chatArrayAdapter.add(new ChatMessage(left, chatTextOthers));
+            chatArrayAdapter.add(new ChatMessage(left, message));
         }
         return true;
     }
